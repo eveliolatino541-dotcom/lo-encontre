@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b4f8a">
+<title>Lo Encontré</title>
+<style>
+:root{--az:#0b4f8a;--az2:#083a68;--am:#ffc93c;--bg:#f2f6fa;--tx:#14202b;--gr:#5b6b7a;--bd:#d8e1ea;--ok:#1a8a4a;--er:#c62828}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.45;font-size:16px}
+header{background:var(--az);color:#fff;padding:22px 16px 26px}
+.wrap{max-width:1000px;margin:0 auto}
+.logo{font-size:30px;font-weight:800;letter-spacing:-.5px}
+.logo span{color:var(--am)}
+header p{opacity:.92;margin:4px 0 16px}
+input,select,textarea{width:100%;min-height:50px;padding:12px 14px;font:inherit;border:2px solid var(--bd);border-radius:12px;background:#fff;color:var(--tx)}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--am);outline-offset:1px}
+.btn{min-height:50px;padding:12px 18px;border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn-am{background:var(--am);color:#2b2100;width:100%;margin-top:12px;font-size:18px}
+.btn-wa{background:#1fa855;color:#fff}
+.btn-ln{background:#fff;color:var(--az);border:2px solid var(--az)}
+.btn-az{background:var(--az);color:#fff}
+.btn-rp{background:#fff;color:#8a5a00;border:2px solid #e0b34a;grid-column:1/-1}
+.opt{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 12px;margin:8px 0 0;border:2px solid var(--bd);border-radius:12px;font-weight:600;cursor:pointer}
+.opt input{width:24px;min-height:24px;height:24px;flex:none;accent-color:var(--az)}
+.btn-er{background:#fff;color:var(--er);border:2px solid var(--er)}
+.filtros{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.filtros .full{grid-column:1/-1}
+main{padding:20px 16px 30px}
+h2{font-size:21px;margin-bottom:4px}
+#cont{color:var(--gr);margin-bottom:14px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:620px){.grid{grid-template-columns:1fr 1fr}.filtros{grid-template-columns:repeat(4,1fr)}.filtros .full{grid-column:auto}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--bd);display:flex;flex-direction:column}
+.foto{height:190px;background:#dde7f0;display:flex;align-items:center;justify-content:center;font-size:54px}
+.foto img{width:100%;height:100%;object-fit:cover}
+.cb{padding:14px;display:flex;flex-direction:column;gap:7px;flex:1}
+.cb h3{font-size:18px}
+.precio{font-size:22px;font-weight:800;color:var(--az)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:#e6eef7;color:var(--az2);padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600}
+.tag.est{background:#fff2c6;color:#6b4e00}
+.loc{color:var(--gr);font-size:14px}
+.desc{font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:8px}
+.vacio{text-align:center;color:var(--gr);padding:40px 10px;background:#fff;border:2px dashed var(--bd);border-radius:16px}
+.modal{position:fixed;inset:0;background:rgba(10,25,40,.6);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.on{display:flex}
+.hoja{background:#fff;width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px 24px}
+@media(min-width:620px){.modal{align-items:center}.hoja{border-radius:20px}}
+.hoja h2{margin-bottom:12px}
+label{display:block;font-weight:700;margin:12px 0 5px;font-size:15px}
+.req{color:var(--er)}
+.err{color:var(--er);font-size:13px;margin-top:4px;min-height:0;display:none}
+.bad{border-color:var(--er)}
+.aviso{background:#fff7de;border:1px solid #f0d88a;border-radius:12px;padding:12px;font-size:14px;margin:14px 0}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-top:10px}
+.chk input{width:26px;min-height:26px;height:26px;flex:none}
+.fila{display:flex;gap:10px;margin-top:14px}
+.fila .btn{flex:1}
+.prev{max-width:100%;max-height:160px;border-radius:12px;margin-top:8px;display:none}
+.det img{width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:10px}
+.det dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:12px 0;font-size:15px}
+.det dt{color:var(--gr)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--tx);color:#fff;padding:13px 20px;border-radius:12px;z-index:20;display:none;max-width:90%;text-align:center}
+input[readonly]{background:#eef2f6;color:var(--gr)}
+footer{background:var(--az2);color:#fff;text-align:center;padding:20px 16px;font-size:14px}
+#adm{position:fixed;inset:0;background:var(--bg);z-index:30;overflow:auto;display:none}
+#adm.on{display:block}
+.ah{background:var(--az2);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:2}
+.ah .btn{min-height:44px;padding:8px 12px}
+.aw{max-width:380px;margin:40px auto;padding:0 16px}
+.an{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff;border-bottom:1px solid var(--bd)}
+.an .btn{min-height:44px;padding:8px 14px;white-space:nowrap;font-size:15px}
+.ab{max-width:1000px;margin:0 auto;padding:14px 14px 30px}
+.ab h2,.ab h3{margin:14px 0 6px}
+.ak{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 14px}
+.kp{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px}
+.kp b{display:block;font-size:28px;color:var(--az)}
+.kp span{font-size:13px;color:var(--gr)}
+.ac{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:12px;margin:10px 0;display:flex;flex-direction:column;gap:4px;font-size:15px;word-break:break-word}
+.ac .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.ac .btn{min-height:44px;padding:8px 12px;font-size:15px;flex:1 1 auto}
+.ev{background:#fff;border-left:4px solid var(--am);padding:8px 10px;margin:6px 0;border-radius:8px;font-size:14px}
+.ev small{color:var(--gr);display:block}
+.st{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:700;background:#e6eef7;color:var(--az2)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="logo">Lo <span>Encontré</span></div>
+  <p>Compra y vende productos de segunda mano en buen estado</p>
+  <input id="q" type="search" placeholder="Buscar productos..." aria-label="Buscar">
+  <div class="filtros">
+    <select id="fCat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+    <select id="fEst" aria-label="Estado"><option value="">Todos los estados</option></select>
+    <input id="fLoc" class="full" placeholder="Ubicación (ej. Managua)" aria-label="Ubicación">
+    <button class="btn btn-ln full" id="limpiar" type="button">Limpiar filtros</button>
+  </div>
+  <button class="btn btn-am" id="pub" type="button">+ Publicar producto</button>
+</div></header>
+
+<main><div class="wrap">
+  <h2>Productos recientes</h2>
+  <div id="cont"></div>
+  <div class="grid" id="lista"></div>
+</div></main>
+
+<footer>evebot. Derechos reservados. 2026</footer>
+
+<div class="modal" id="mForm"><div class="hoja">
+  <h2 id="formTit">Publicar producto</h2>
+  <form id="form" novalidate>
+    <label>Nombre completo del vendedor <span class="req">*</span></label>
+    <input id="vNom" autocomplete="name" placeholder="Nombre y apellidos"><div class="err"></div>
+    <div id="vCedBox"><label>Número de cédula <span class="req">*</span></label>
+    <input id="vCed" placeholder="001-010190-0001A" autocapitalize="characters"><div class="err"></div></div>
+    <div class="aviso" id="vNota" style="display:none;margin:8px 0 0"></div>
+    <button type="button" class="btn btn-ln" id="btnCorr" style="display:none;width:100%;margin-top:10px">Solicitar corrección de cédula</button>
+    <label>WhatsApp / teléfono <span class="req">*</span></label>
+    <input id="vTel" type="tel" inputmode="tel" placeholder="8888 8888"><div class="err"></div>
+    <label>Ubicación <span class="req">*</span></label>
+    <input id="vLoc" placeholder="Ciudad o municipio"><div class="err"></div>
+    <hr style="border:0;border-top:1px solid var(--bd);margin:18px 0 4px">
+    <label>Nombre del producto <span class="req">*</span></label>
+    <input id="pNom" maxlength="80"><div class="err"></div>
+    <label>Categoría <span class="req">*</span></label>
+    <select id="pCat"></select><div class="err"></div>
+    <label>Precio en córdobas (C$) <span class="req">*</span></label>
+    <input id="pPre" type="number" inputmode="numeric" min="1" step="1" placeholder="0"><div class="err"></div>
+    <label>Estado <span class="req">*</span></label>
+    <select id="pEst"></select><div class="err"></div>
+    <label>Descripción <span class="req">*</span></label>
+    <textarea id="pDes" maxlength="500"></textarea><div class="err"></div>
+    <label>Fotografía (opcional)</label>
+    <input id="pFoto" type="file" accept="image/*">
+    <img id="prev" class="prev" alt="Vista previa">
+    <div class="aviso">Se solicita para identificar al vendedor y mantener la trazabilidad de sus publicaciones.</div>
+    <label class="chk"><input type="checkbox" id="acepto"> Entiendo y acepto el uso de mi cédula para trazabilidad.</label><div class="err"></div>
+    <div class="fila">
+      <button type="button" class="btn btn-ln" id="cancel">Cancelar</button>
+      <button type="submit" class="btn btn-az" id="btnGuardar">Publicar</button>
+    </div>
+  </form>
+</div></div>
+
+<div class="modal" id="mDet"><div class="hoja det" id="detBody"></div></div>
+<div class="modal" id="mRep"><div class="hoja">
+  <h2>⚠️ Informar sobre esta publicación</h2>
+  <p id="repProd" style="color:var(--gr);margin-bottom:6px"></p>
+  <div id="repMot" role="radiogroup" aria-label="Motivo"></div>
+  <div class="err" id="repErr"></div>
+  <label for="repDes">Descripción del problema (opcional)</label>
+  <textarea id="repDes" maxlength="500"></textarea>
+  <div class="fila">
+    <button type="button" class="btn btn-ln" id="repCancel">Cancelar</button>
+    <button type="button" class="btn btn-az" id="repSend">Enviar información</button>
+  </div>
+</div></div>
+<div id="adm" aria-label="Panel administrativo"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var CATS=["Electrónica","Hogar","Ropa","Vehículos","Otros"];
+var ESTS=["Como nuevo","Buen estado","Uso normal"];
+var KEY="loEncontre_mvp22_pubs";
+var KEYV="loEncontre_mvp22_vendedores";
+var vends=[],cedBloq=false;
+var ICON={"Electrónica":"📱","Hogar":"🛋️","Ropa":"👕","Vehículos":"🚗","Otros":"📦"};
+var pubs=[],foto="";
+
+function $(id){return document.getElementById(id);}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||"[]");pubs=Array.isArray(d)?d:[];}catch(e){pubs=[];}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(pubs));return true;}catch(e){return false;}}
+function loadV(){try{var d=JSON.parse(localStorage.getItem(KEYV)||"[]");vends=Array.isArray(d)?d:[];}catch(e){vends=[];}}
+function saveV(){try{localStorage.setItem(KEYV,JSON.stringify(vends));return true;}catch(e){return false;}}
+function cedKey(s){return String(s||"").replace(/[\s-]/g,"").toUpperCase();}
+function findV(ced){var k=cedKey(ced);if(!k)return null;for(var i=0;i<vends.length;i++){if(cedKey(vends[i].cedula)===k)return vends[i];}return null;}
+function genVen(){var m=0;vends.forEach(function(v){var n=parseInt(String(v.ven).replace(/\D/g,""),10)||0;if(n>m)m=n;});return "VEN-"+String(m+1).padStart(4,"0");}
+function syncVend(){
+  var v=findV($("vCed").value),n=$("vNom"),t=$("vTel"),nota=$("vNota");
+  if(v){
+    n.value=v.nombre;t.value=v.telefono;n.readOnly=true;t.readOnly=true;cedBloq=true;
+    nota.textContent="Vendedor ya registrado ("+v.ven+"). El nombre y el WhatsApp quedan asociados a esta cédula y no se pueden cambiar.";
+    nota.style.display="block";
+  }else{
+    if(cedBloq){n.value="";t.value="";}
+    n.readOnly=false;t.readOnly=false;cedBloq=false;nota.style.display="none";
+  }
+}
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function fmt(n){return "C$ "+Number(n).toLocaleString("es-NI");}
+function toast(m){var t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display="none";},3200);}
+function opts(sel,arr,first){sel.innerHTML="";if(first){var o=document.createElement("option");o.value="";o.textContent=first;sel.appendChild(o);}arr.forEach(function(v){var o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
+
+function telWA(t){var d=String(t).replace(/\D/g,"");if(d.length===8)d="505"+d;return d;}
+function waLink(p){
+  var msg="Hola, estoy interesado en tu producto \""+p.nombre+"\" ("+fmt(p.precio)+") publicado en Lo Encontré. ¿Sigue disponible? (Ref: "+p.id+")";
+  return "https://wa.me/"+telWA(p.telefono)+"?text="+encodeURIComponent(msg);
+}
+function fecha(iso){try{return new Date(iso).toLocaleString("es-NI",{dateStyle:"medium",timeStyle:"short"});}catch(e){return iso;}}
+function genId(){return "LE-"+Date.now().toString(36).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();}
+
+function fotoBox(p){var f=el("div","foto");if(p.foto){var i=document.createElement("img");i.src=p.foto;i.alt=p.nombre;i.loading="lazy";f.appendChild(i);}else f.textContent=ICON[p.categoria]||"📦";return f;}
+
+function render(){
+  var q=norm($("q").value),c=$("fCat").value,e=$("fEst").value,l=norm($("fLoc").value);
+  var r=pubs.filter(function(p){
+    return pubVis(p)&&(!c||p.categoria===c)&&(!e||p.estado===e)&&(!l||norm(p.ubicacion).indexOf(l)>-1)&&
+      (!q||norm(p.nombre+" "+p.descripcion+" "+p.categoria).indexOf(q)>-1);
+  }).sort(function(a,b){return b.fecha.localeCompare(a.fecha);});
+  var box=$("lista");box.innerHTML="";
+  $("cont").textContent=r.length+(r.length===1?" producto":" productos");
+  if(!r.length){box.appendChild(el("div","vacio",pubs.length?"No hay resultados. Prueba con otra búsqueda o filtro.":"Aún no hay productos. Toca \"Publicar producto\" para agregar el primero."));return;}
+  r.forEach(function(p){
+    var card=el("article","card");
+    card.appendChild(fotoBox(p));
+    var b=el("div","cb");
+    b.appendChild(el("h3",null,p.nombre));
+    b.appendChild(el("div","precio",fmt(p.precio)));
+    var t=el("div","tags");t.appendChild(el("span","tag est",p.estado));t.appendChild(el("span","tag",p.categoria));b.appendChild(t);
+    b.appendChild(el("div","loc","📍 "+p.ubicacion));
+    b.appendChild(el("p","desc",p.descripcion));
+    var a=el("div","acc");
+    var w=el("a","btn btn-wa","WhatsApp");w.href=waLink(p);w.target="_blank";w.rel="noopener";a.appendChild(w);
+    var d=el("button","btn btn-ln","Ver detalles");d.type="button";d.onclick=function(){detalle(p);};a.appendChild(d);
+    var ed=el("button","btn btn-az","Editar");ed.type="button";ed.onclick=function(){abrirForm(p);};a.appendChild(ed);
+    var de=el("button","btn btn-er","Eliminar");de.type="button";de.onclick=function(){eliminar(p);};a.appendChild(de);
+    var rp=el("button","btn btn-rp","⚠️ Informar sobre esta publicación");rp.type="button";rp.onclick=function(){abrirReporte(p);};a.appendChild(rp);
+    b.appendChild(a);card.appendChild(b);box.appendChild(card);
+  });
+}
+
+function detalle(p){
+  var d=$("detBody");d.innerHTML="";
+  if(p.foto){var i=document.createElement("img");i.src=p.foto;i.alt=p.nombre;d.appendChild(i);}
+  d.appendChild(el("h2",null,p.nombre));
+  d.appendChild(el("div","precio",fmt(p.precio)));
+  d.appendChild(el("p",null,p.descripcion));
+  var dl=document.createElement("dl");
+  [["Estado",p.estado],["Categoría",p.categoria],["Ubicación",p.ubicacion],["Vendedor",p.vendedor],["Código vendedor",p.ven||"—"],["ID publicación",p.id],["Publicado",fecha(p.fecha)]].forEach(function(x){dl.appendChild(el("dt",null,x[0]));dl.appendChild(el("dd",null,x[1]));});
+  d.appendChild(dl);
+  d.appendChild(el("div","aviso","Revisa el producto en persona y en un lugar público antes de pagar. Lo Encontré no verifica ni garantiza los productos publicados."));
+  var f=el("div","fila");
+  var w=el("a","btn btn-wa","WhatsApp");w.href=waLink(p);w.target="_blank";w.rel="noopener";
+  var c=el("button","btn btn-ln","Cerrar");c.type="button";c.onclick=function(){$("mDet").classList.remove("on");};
+  f.appendChild(w);f.appendChild(c);d.appendChild(f);
+  $("mDet").classList.add("on");
+}
+
+function setErr(inp,msg){
+  var er=inp.nextElementSibling;
+  if(inp.type==="file"||!er||er.className!=="err")er=null;
+  if(inp.id==="acepto")er=inp.parentNode.nextElementSibling;
+  inp.classList.toggle("bad",!!msg);
+  if(er){er.textContent=msg||"";er.style.display=msg?"block":"none";}
+}
+var CED=/^\d{3}-?\d{6}-?\d{4}[A-Za-z]$/;
+function validar(){
+  var ok=true,first=null;
+  function chk(id,test,msg){var i=$(id),m=test(i)?"":msg;setErr(i,m);if(m){ok=false;if(!first)first=i;}}
+  var req=function(i){return i.value.trim().length>0;};
+  chk("vNom",function(i){return i.value.trim().split(/\s+/).length>=2&&i.value.trim().length>=5;},"Escribe tu nombre completo (nombre y apellido).");
+  if(!editId)chk("vCed",function(i){return CED.test(i.value.trim());},"La cédula es obligatoria. Formato: 001-010190-0001A.");
+  chk("vTel",function(i){var d=i.value.replace(/\D/g,"");return d.length===8||(d.length===11&&d.indexOf("505")===0);},"Escribe un número válido de 8 dígitos.");
+  chk("vLoc",req,"La ubicación es obligatoria.");
+  chk("pNom",req,"Escribe el nombre del producto.");
+  chk("pCat",req,"Elige una categoría.");
+  chk("pPre",function(i){return Number(i.value)>0;},"Escribe un precio mayor que 0.");
+  chk("pEst",req,"Elige el estado del producto.");
+  chk("pDes",req,"Agrega una descripción.");
+  chk("acepto",function(i){return i.checked;},"Debes aceptar para publicar.");
+  if(first)first.focus();
+  return ok;
+}
+
+function reducir(file,cb){
+  var rd=new FileReader();
+  rd.onerror=function(){cb("");};
+  rd.onload=function(){
+    var im=new Image();
+    im.onerror=function(){cb("");};
+    im.onload=function(){
+      var M=800,s=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement("canvas");
+      cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);
+      cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+      cb(cv.toDataURL("image/jpeg",0.7));
+    };
+    im.src=rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+
+function eliminar(p){
+  if(!confirm("¿Está seguro de que desea eliminar esta publicación?"))return;
+  if(pubs.indexOf(p)<0)return;
+  p.eliminada=true;p.fechaEliminada=new Date().toISOString();
+  if(!save()){delete p.eliminada;delete p.fechaEliminada;toast("No se pudo eliminar. Intenta de nuevo.");return;}
+  render();toast("Publicación eliminada.");
+}
+var editId=null;
+function abrirForm(p){editId=p?p.id:null;$("form").reset();foto="";$("prev").style.display="none";
+  $("formTit").textContent=p?"Editar publicación":"Publicar producto";
+  $("btnGuardar").textContent=p?"Guardar cambios":"Publicar";
+  cedBloq=false;$("vNom").readOnly=false;$("vTel").readOnly=false;$("vCed").readOnly=!!p;$("vCedBox").style.display=p?"none":"";$("btnCorr").style.display=p?"flex":"none";$("vNota").style.display="none";
+  Array.prototype.forEach.call($("form").querySelectorAll(".bad"),function(x){x.classList.remove("bad");});
+  Array.prototype.forEach.call($("form").querySelectorAll(".err"),function(x){x.style.display="none";});
+  if(p){
+    $("vNom").value=p.vendedor;$("vCed").value=p.cedula||"";$("vTel").value=p.telefono;$("vLoc").value=p.ubicacion;
+    $("pNom").value=p.nombre;$("pCat").value=p.categoria;$("pPre").value=p.precio;$("pEst").value=p.estado;
+    $("pDes").value=p.descripcion;$("acepto").checked=true;syncVend();$("vCed").value="";
+    if(p.foto){foto=p.foto;$("prev").src=p.foto;$("prev").style.display="block";}
+  }
+  $("mForm").classList.add("on");$("mForm").firstElementChild.scrollTop=0;}
+function cerrarForm(){$("mForm").classList.remove("on");}
+
+var MOT=["Información incorrecta","Producto diferente al anunciado","Posible estafa","Publicación duplicada","Contenido inapropiado","Otro","Tengo información que podría requerir verificación"];
+var KEYR="loEncontre_mvp2_reportes",repPubId=null;
+function genRepId(){return "RP-"+Date.now().toString(36).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();}
+function abrirReporte(pb){
+  repPubId=pb.id;$("repProd").textContent="Publicación: "+pb.nombre;
+  var box=$("repMot");box.innerHTML="";
+  MOT.forEach(function(m){
+    var l=el("label","opt"),r=document.createElement("input");r.type="radio";r.name="repMotivo";r.value=m;
+    l.appendChild(r);l.appendChild(el("span",null,m));box.appendChild(l);
+  });
+  $("repDes").value="";$("repErr").style.display="none";
+  $("mRep").classList.add("on");$("mRep").firstElementChild.scrollTop=0;
+}
+function cerrarReporte(){$("mRep").classList.remove("on");repPubId=null;}
+function enviarReporte(){
+  var sel=document.querySelector('input[name="repMotivo"]:checked');
+  if(!sel){$("repErr").textContent="Elige un motivo.";$("repErr").style.display="block";return;}
+  var lista=[];
+  try{var d=JSON.parse(localStorage.getItem(KEYR)||"[]");lista=Array.isArray(d)?d:[];}catch(e){lista=[];}
+  lista.push({id:genRepId(),publicacionId:repPubId,motivo:sel.value,descripcion:$("repDes").value.trim(),fecha:new Date().toISOString()});
+  try{localStorage.setItem(KEYR,JSON.stringify(lista));}
+  catch(e){toast("No se pudo guardar la información. Intenta de nuevo.");return;}
+  cerrarReporte();
+  toast("Información recibida. Gracias por ayudarnos a mantener Lo Encontré seguro.");
+}
+
+/* ===== PANEL ADMINISTRATIVO (MVP2.3c) ===== */
+var ADMIN_CLAVE="Admin2026!"; /* cambia esta contraseña antes de usar */
+var KEYS="loEncontre_mvp23_solicitudes",KEYA="loEncontre_mvp23_actividad";
+var sols=[],acts=[],admOk=false,admTab="res",admSub=null,admBack=null,aF=null;
+function rdL(k){try{var d=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(d)?d:[];}catch(e){return [];}}
+function wrL(k,a){try{localStorage.setItem(k,JSON.stringify(a));return true;}catch(e){return false;}}
+function logA(x){var a=rdL(KEYA);a.unshift({f:new Date().toISOString(),x:x});wrL(KEYA,a.slice(0,100));}
+function pubVis(p){return sit(p)==="Activa";}
+function sit(p){if(p.eliminada)return "Eliminada";if(p.situacion==="vendida")return "Vendida";if(p.situacion==="suspendida")return "Suspendida";return Date.now()-new Date(p.fecha).getTime()>15*864e5?"Vencida":"Activa";}
+function E(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function gp(id){return pubs.filter(function(p){return p.id===id;})[0];}
+function gv(n){return vends.filter(function(v){return v.ven===n;})[0];}
+function pubsDe(v){return pubs.filter(function(p){return p.ven===v.ven;});}
+function cnt(l){var c={Activa:0,Vendida:0,Vencida:0,Suspendida:0};l.forEach(function(p){var s=sit(p);if(c[s]!=null)c[s]++;});return c;}
+function kp(k){return '<div class="kp"><b>'+k[1]+'</b><span>'+k[0]+'</span></div>';}
+function ln(x){return '<div><b>'+x[0]+':</b> '+E(x[1])+'</div>';}
+function bt(c,a,i,t){return '<button class="btn '+c+'" data-a="'+a+'" data-i="'+E(i)+'">'+t+'</button>';}
+function vac(t){return '<div class="vacio">'+t+'</div>';}
+function nSol(){return sols.filter(function(s){return s.estado==="Pendiente";}).length;}
+
+function pedirCorr(){
+  var p=gp(editId);if(!p)return;var v=gv(p.ven);if(!v)return;
+  sols=rdL(KEYS);
+  if(sols.some(function(s){return s.ven===v.ven&&s.estado==="Pendiente";})){toast("Ya hay una solicitud pendiente de revisión.");return;}
+  var n=(prompt("Escribe la cédula correcta (formato 001-010190-0001A):")||"").trim().toUpperCase();
+  if(!n)return;
+  if(!CED.test(n)){toast("La cédula no tiene un formato válido.");return;}
+  sols.push({id:"SC-"+Date.now().toString(36).toUpperCase(),ven:v.ven,nombre:v.nombre,actual:v.cedula,nueva:n,fecha:new Date().toISOString(),estado:"Pendiente"});
+  if(!wrL(KEYS,sols)){toast("No se pudo enviar la solicitud.");return;}
+  logA("Solicitud de corrección de cédula de "+v.ven);
+  toast("Solicitud enviada. El administrador la revisará.");
+}
+
+function A(){return $("adm");}
+function admAbrir(){A().classList.add("on");document.body.style.overflow="hidden";admOk?admVer():admLogin();}
+function admCerrar(){admOk=false;admSub=null;admBack=null;A().classList.remove("on");A().innerHTML="";document.body.style.overflow="";if(location.hash)history.replaceState(null,"",location.pathname+location.search);render();}
+function admLogin(){
+  A().innerHTML='<div class="aw"><h2>Acceso administrador</h2><label for="aPw">Contraseña</label><input id="aPw" type="password" autocomplete="off"><div class="err" id="aEr"></div><button class="btn btn-az" style="width:100%;margin-top:12px" data-a="go">Entrar</button><button class="btn btn-ln" style="width:100%;margin-top:10px" data-a="out">Volver a Lo Encontré</button></div>';
+  $("aPw").focus();
+}
+function shell(c){
+  var T=[["res","Resumen"],["ven","Vendedores"],["pub","Publicaciones"],["sol","Cédulas"+(nSol()?" ("+nSol()+")":"")]];
+  return '<div class="ah"><b>Panel administrativo</b>'+bt("btn-ln","out","","← Lo Encontré")+'</div><nav class="an">'+T.map(function(t){return bt(admTab===t[0]&&!admSub?"btn-az":"btn-ln","tab",t[0],t[1]);}).join("")+'</nav><div class="ab">'+c+'</div>';
+}
+function admVer(keep){
+  var st=A().scrollTop;sols=rdL(KEYS);acts=rdL(KEYA);
+  var c=admSub?({verV:vFicha,verP:vPub,ed:vEdit})[admSub.t](admSub.i):({res:vRes,ven:vVens,pub:vPubs,sol:vSols})[admTab]();
+  A().innerHTML=shell(c);A().scrollTop=keep?st:0;
+}
+function nav(s){admBack=admSub;admSub=s;admVer();}
+
+function vRes(){
+  var c=cnt(pubs);
+  return '<h2>Resumen</h2><div class="ak">'+[["Vendedores registrados",vends.length],["Publicaciones",pubs.length],["Activas",c.Activa],["Vendidas",c.Vendida],["Vencidas",c.Vencida],["Suspendidas",c.Suspendida],["Correcciones de cédula pendientes",nSol()]].map(kp).join("")+'</div><h3>Actividad reciente</h3>'+(acts.length?acts.slice(0,15).map(function(a){return '<div class="ev"><small>'+E(fecha(a.f))+'</small>'+E(a.x)+'</div>';}).join(""):vac("Aún no hay actividad."));
+}
+function vVens(){
+  return '<h2>Vendedores</h2>'+(vends.length?vends.map(function(v){return '<div class="ac"><b>'+E(v.ven)+' · '+E(v.nombre)+'</b>'+[["Cédula",v.cedula],["WhatsApp",v.telefono],["Registro",fecha(v.fecha)],["Publicaciones",pubsDe(v).length]].map(ln).join("")+'<div class="row">'+bt("btn-az","verV",v.ven,"Ver vendedor")+'</div></div>';}).join(""):vac("No hay vendedores registrados."));
+}
+function hist(p){
+  return '<div class="ac"><b>'+E(p.id)+' · '+E(p.nombre)+'</b>'+[["Precio",fmt(p.precio)],["Publicado",fecha(p.fecha)]].map(ln).join("")+'<div><b>Estado:</b> <span class="st">'+sit(p)+'</span></div><div class="row">'+bt("btn-ln","verP",p.id,"Ver publicación")+'</div></div>';
+}
+function solCard(s,adm){
+  return '<div class="ac"><b>'+E(s.ven)+' · '+E(s.nombre)+'</b>'+[["Cédula actual",s.actual],["Nueva cédula solicitada",s.nueva],["Fecha de solicitud",fecha(s.fecha)]].map(ln).join("")+'<div><b>Estado:</b> <span class="st">'+E(s.estado)+'</span>'+(s.resuelta?' · '+E(fecha(s.resuelta)):'')+'</div>'+(adm&&s.estado==="Pendiente"?'<div class="row">'+bt("btn-az","apr",s.id,"Aprobar")+bt("btn-er","rec",s.id,"Rechazar")+'</div>':'')+'</div>';
+}
+function vFicha(n){
+  var v=gv(n);if(!v)return "";var l=pubsDe(v),c=cnt(l),ss=sols.filter(function(s){return s.ven===n;}).reverse();
+  return bt("btn-ln","back","","← Volver")+'<h2>'+E(v.ven)+'</h2><div class="ac">'+[["Nombre",v.nombre],["Cédula",v.cedula],["WhatsApp",v.telefono],["Fecha de registro",fecha(v.fecha)]].map(ln).join("")+'</div><h3>Resumen</h3><div class="ak">'+[["Publicaciones",l.length],["Activas",c.Activa],["Vendidas",c.Vendida],["Vencidas",c.Vencida],["Suspendidas",c.Suspendida]].map(kp).join("")+'</div><h3>Historial de publicaciones</h3>'+(l.length?l.slice().reverse().map(hist).join(""):vac("Sin publicaciones."))+'<h3>Correcciones de cédula</h3>'+(ss.length?ss.map(function(s){return solCard(s,false);}).join(""):vac("Sin solicitudes."));
+}
+function pAcc(p){
+  var s=sit(p),d=p.id;
+  if(s==="Eliminada")return '<div class="row">'+bt("btn-ln","verP",d,"Ver publicación")+'</div>';
+  return '<div class="row">'+bt("btn-ln","verP",d,"Ver publicación")+bt("btn-az","edP",d,"Editar publicación")+(s==="Suspendida"?bt("btn-ln","reac",d,"Reactivar"):bt("btn-ln","susp",d,"Suspender"))+(s==="Vendida"?"":bt("btn-ln","vnd",d,"Marcar como vendida"))+bt("btn-er","del",d,"Eliminar")+'</div>';
+}
+function vPubs(){
+  return '<h2>Publicaciones</h2>'+(pubs.length?pubs.slice().sort(function(a,b){return b.fecha.localeCompare(a.fecha);}).map(function(p){return '<div class="ac"><b>'+E(p.id)+' · '+E(p.nombre)+'</b>'+[["Vendedor",p.ven+" · "+p.vendedor],["Precio",fmt(p.precio)],["Fecha",fecha(p.fecha)]].map(ln).join("")+'<div><b>Estado:</b> <span class="st">'+sit(p)+'</span></div>'+pAcc(p)+'</div>';}).join(""):vac("No hay publicaciones."));
+}
+function vPub(id){
+  var p=gp(id);if(!p)return "";var v=gv(p.ven)||{};
+  return bt("btn-ln","back","","← Volver")+'<div class="ac">'+(p.foto?'<img src="'+E(p.foto)+'" alt="" style="width:100%;max-height:260px;object-fit:cover;border-radius:12px">':'')+'<b style="font-size:18px">'+E(p.nombre)+'</b><div class="precio">'+fmt(p.precio)+'</div><p>'+E(p.descripcion)+'</p>'+[["ID",p.id],["Estado",sit(p)],["Vendedor",p.ven+" · "+p.vendedor],["Cédula",v.cedula||"—"],["WhatsApp",p.telefono],["Categoría",p.categoria],["Condición",p.estado],["Ubicación",p.ubicacion],["Publicado",fecha(p.fecha)]].map(ln).join("")+'</div>';
+}
+function sel(id,arr,val){return '<select id="'+id+'">'+arr.map(function(x){return '<option'+(x===val?' selected':'')+'>'+E(x)+'</option>';}).join("")+'</select>';}
+function vEdit(id){
+  var p=gp(id);if(!p)return "";
+  return bt("btn-ln","back","","← Cancelar")+'<h2>Editar '+E(p.id)+'</h2><div class="ac"><label>Nombre del producto</label><input id="aeNom" maxlength="80" value="'+E(p.nombre)+'"><label>Categoría</label>'+sel("aeCat",CATS,p.categoria)+'<label>Precio en córdobas (C$)</label><input id="aePre" type="number" inputmode="numeric" min="1" step="1" value="'+E(p.precio)+'"><label>Estado</label>'+sel("aeEst",ESTS,p.estado)+'<label>Ubicación</label><input id="aeLoc" value="'+E(p.ubicacion)+'"><label>Descripción</label><textarea id="aeDes" maxlength="500">'+E(p.descripcion)+'</textarea><label>Fotografía</label><input id="aeFoto" type="file" accept="image/*"><img id="aePrev" class="prev" alt="" style="display:'+(p.foto?'block':'none')+'" src="'+E(p.foto||"")+'"><div class="row">'+bt("btn-ln","qf","","Quitar foto")+bt("btn-az","gsave",id,"Guardar cambios")+'</div></div>';
+}
+function vSols(){
+  return '<h2>Solicitudes de corrección de cédula</h2>'+(sols.length?sols.slice().reverse().map(function(s){return solCard(s,true);}).join(""):vac("No hay solicitudes."));
+}
+
+function mut(id,fn,msg,lg,volver){
+  var p=gp(id);if(!p)return;var i=pubs.indexOf(p),bak=JSON.stringify(p);
+  fn(p);
+  if(!save()){pubs[i]=JSON.parse(bak);toast("No se pudo guardar. Revisa el almacenamiento.");return;}
+  if(lg)logA(lg);toast(msg);
+  if(volver)AC.back();else admVer(true);
+}
+var AC={
+  go:function(){if($("aPw").value===ADMIN_CLAVE){admOk=true;admVer();}else{$("aEr").textContent="Contraseña incorrecta.";$("aEr").style.display="block";}},
+  out:admCerrar,
+  tab:function(i){admTab=i;admSub=null;admBack=null;admVer();},
+  verV:function(i){nav({t:"verV",i:i});},
+  verP:function(i){nav({t:"verP",i:i});},
+  edP:function(i){aF=null;nav({t:"ed",i:i});},
+  back:function(){admSub=admBack;admBack=null;admVer(true);},
+  susp:function(i){mut(i,function(p){p.situacion="suspendida";},"Publicación suspendida.","Publicación suspendida: "+i);},
+  reac:function(i){mut(i,function(p){p.situacion="activa";},"Publicación reactivada.","Publicación reactivada: "+i);},
+  vnd:function(i){mut(i,function(p){p.situacion="vendida";},"Marcada como vendida.","Publicación marcada como vendida: "+i);},
+  del:function(i){if(!confirm("¿Eliminar esta publicación? Dejará de verse públicamente, pero se conserva su historial."))return;mut(i,function(p){p.eliminada=true;p.fechaEliminada=new Date().toISOString();},"Publicación eliminada.","Publicación eliminada: "+i);},
+  qf:function(){aF="";$("aePrev").style.display="none";},
+  gsave:function(i){
+    var g=function(x){return $(x).value.trim();};
+    if(!g("aeNom")||!g("aeDes")||!g("aeLoc")||!(Number($("aePre").value)>0)){toast("Completa todos los campos con datos válidos.");return;}
+    mut(i,function(p){p.nombre=g("aeNom");p.descripcion=g("aeDes");p.ubicacion=g("aeLoc");p.precio=Math.round(Number($("aePre").value));p.categoria=$("aeCat").value;p.estado=$("aeEst").value;if(aF!==null)p.foto=aF;p.modificado=new Date().toISOString();},"Cambios guardados.","Publicación editada: "+i,true);
+  },
+  apr:function(id){
+    var s=sols.filter(function(x){return x.id===id;})[0];if(!s||s.estado!=="Pendiente")return;
+    var v=gv(s.ven),o=findV(s.nueva);
+    if(o&&o!==v){toast("Esa cédula ya pertenece a "+o.ven+". No se puede aprobar.");return;}
+    var vb=JSON.stringify(vends),pb=JSON.stringify(pubs);
+    v.cedula=s.nueva;pubs.forEach(function(p){if(p.ven===v.ven)p.cedula=s.nueva;});
+    if(!saveV()||!save()){vends=JSON.parse(vb);pubs=JSON.parse(pb);saveV();save();toast("No se pudo guardar el cambio.");return;}
+    s.estado="Aprobada";s.resuelta=new Date().toISOString();wrL(KEYS,sols);
+    logA("Corrección de cédula aprobada: "+v.ven);toast("Cédula actualizada. Se mantiene "+v.ven+".");admVer(true);
+  },
+  rec:function(id){
+    var s=sols.filter(function(x){return x.id===id;})[0];if(!s||s.estado!=="Pendiente")return;
+    s.estado="Rechazada";s.resuelta=new Date().toISOString();wrL(KEYS,sols);
+    logA("Corrección de cédula rechazada: "+s.ven);toast("Solicitud rechazada.");admVer(true);
+  }
+};
+function initAdm(){
+  A().addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(b&&AC[b.dataset.a])AC[b.dataset.a](b.dataset.i);});
+  A().addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id==="aPw"){e.preventDefault();AC.go();}});
+  A().addEventListener("change",function(e){
+    if(e.target.id!=="aeFoto")return;
+    var f=e.target.files&&e.target.files[0];if(!f||f.type.indexOf("image/")!==0)return;
+    reducir(f,function(d){if(d){aF=d;$("aePrev").src=d;$("aePrev").style.display="block";}else toast("No se pudo leer la foto.");});
+  });
+  $("btnCorr").onclick=pedirCorr;
+  var n=0,h,ft=document.querySelector("footer");
+  ft.addEventListener("click",function(){n++;clearTimeout(h);h=setTimeout(function(){n=0;},2000);if(n>=5){n=0;admAbrir();}});
+  window.addEventListener("hashchange",function(){if(location.hash==="#admin")admAbrir();});
+  if(location.hash==="#admin")admAbrir();
+}
+
+function init(){
+  opts($("fCat"),CATS,"Todas las categorías");
+  opts($("fEst"),ESTS,"Todos los estados");
+  opts($("pCat"),CATS,"Selecciona...");
+  opts($("pEst"),ESTS,"Selecciona...");
+  load();loadV();render();
+  ["q","fCat","fEst","fLoc"].forEach(function(id){$(id).addEventListener("input",render);$(id).addEventListener("change",render);});
+  $("limpiar").onclick=function(){$("q").value="";$("fCat").value="";$("fEst").value="";$("fLoc").value="";render();};
+  $("pub").onclick=function(){abrirForm(null);};
+  $("cancel").onclick=cerrarForm;
+  $("vCed").addEventListener("input",syncVend);
+  initAdm();
+  $("repCancel").onclick=cerrarReporte;
+  $("repSend").onclick=enviarReporte;
+  $("mRep").addEventListener("click",function(e){if(e.target===this)cerrarReporte();});
+  $("mForm").addEventListener("click",function(e){if(e.target===this)cerrarForm();});
+  $("mDet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+  $("pFoto").addEventListener("change",function(){
+    var f=this.files&&this.files[0];foto="";$("prev").style.display="none";
+    if(!f)return;
+    if(f.type.indexOf("image/")!==0){toast("Elige un archivo de imagen.");this.value="";return;}
+    reducir(f,function(d){foto=d;if(d){$("prev").src=d;$("prev").style.display="block";}else toast("No se pudo leer la foto.");});
+  });
+  $("form").addEventListener("submit",function(e){
+    e.preventDefault();
+    if(!validar()){toast("Revisa los campos marcados.");return;}
+    var tel=$("vTel").value.replace(/\D/g,"");
+    var orig=null;if(editId){for(var k=0;k<pubs.length;k++){if(pubs[k].id===editId){orig=pubs[k];break;}}}
+    var ced=(orig&&orig.cedula)?orig.cedula:$("vCed").value.trim().toUpperCase(),vBak=JSON.stringify(vends);
+    var v=findV(ced),nuevoV=!v;
+    if(!v){v={ven:genVen(),cedula:ced,nombre:$("vNom").value.trim(),telefono:tel,fecha:new Date().toISOString(),publicaciones:0};vends.push(v);}
+    if(!orig)v.publicaciones=(v.publicaciones||0)+1;
+    if(!saveV()){vends=JSON.parse(vBak);toast("No se pudo guardar el vendedor. Revisa el almacenamiento del navegador.");return;}
+    var p={
+      id:orig?orig.id:genId(),fecha:orig?orig.fecha:new Date().toISOString(),modificado:orig?new Date().toISOString():undefined,
+      ven:v.ven,vendedor:v.nombre,
+      cedula:v.cedula,
+      telefono:v.telefono,ubicacion:$("vLoc").value.trim(),
+      nombre:$("pNom").value.trim(),categoria:$("pCat").value,
+      precio:Math.round(Number($("pPre").value)),estado:$("pEst").value,
+      descripcion:$("pDes").value.trim(),foto:foto,situacion:orig?orig.situacion:"activa"
+    };
+    var idx=orig?pubs.indexOf(orig):-1;
+    if(idx>-1)pubs[idx]=p;else pubs.push(p);
+    function undo(){if(idx>-1)pubs[idx]=orig;else pubs.pop();vends=JSON.parse(vBak);saveV();}
+    if(!save()){
+      if(p.foto){p.foto="";if(!save()){undo();toast("No hay espacio en el almacenamiento del navegador.");return;}toast("Publicado sin foto: poco espacio disponible.");}
+      else{undo();toast("No se pudo guardar. Revisa el almacenamiento del navegador.");return;}
+    }else toast(idx>-1?"Cambios guardados.":"Producto publicado. ID: "+p.id+" · Vendedor: "+p.ven);
+    if(!orig){if(nuevoV)logA("Nuevo vendedor registrado: "+v.ven);logA("Nueva publicación "+p.id+" de "+v.ven);}
+    cerrarForm();render();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+init();
+})();
+</script>
+</body>
+</html>
